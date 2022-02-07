@@ -120,15 +120,15 @@ class Game extends React.Component {
               {moveElements}
             </ol>
           </div>
-            <div className="board-parent">
-              <div className="game-board">
-                <Board
-                  squares={current.squares}
-                  onClick={(i) => this.handleClick(i)}
-                  boardSize={this.state.boardSize}
-                />
-              </div>
+          <div className="board-parent">
+            <div className="game-board">
+              <Board
+                squares={current.squares}
+                onClick={(i) => this.handleClick(i)}
+                boardSize={this.state.boardSize}
+              />
             </div>
+          </div>
           <div className="game-info">
             {status}
             <div>
@@ -139,15 +139,17 @@ class Game extends React.Component {
           </div>
         </div>
         :
-        <div className="size-select">
-          <div>
-            Select board size: {`${this.state.boardSizePre}x${this.state.boardSizePre}`}
-          </div>
-          <input type="range" onInput={(c) => this.setState({ boardSizePre: c.target.value })} min="1" max="15" value={this.state.boardSizePre} />
-          <div>
-            <button onClick={() => { this.setState({ boardSize: this.state.boardSizePre }) }}>
-              OK
-            </button>
+        <div className="screen select-screen">
+          <div className="size-select">
+            <div>
+              Select board size: {`${this.state.boardSizePre}x${this.state.boardSizePre}`}
+            </div>
+            <input type="range" onInput={(c) => this.setState({ boardSizePre: c.target.value })} min="1" max="15" value={this.state.boardSizePre} />
+            <div>
+              <button onClick={() => { this.setState({ boardSize: this.state.boardSizePre }) }}>
+                OK
+              </button>
+            </div>
           </div>
         </div>
     );
