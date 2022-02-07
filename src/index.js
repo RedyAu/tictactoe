@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './index.scss';
+import 'animate.css';
 
 function Square(props) {
   return (
@@ -53,6 +54,7 @@ class Game extends React.Component {
       history: [{
         squares: []
       }],
+      selectorVisible: true,
       xIsNext: true,
       stepNumber: 0,
       boardSize: null, //TODO change back to null
@@ -114,14 +116,14 @@ class Game extends React.Component {
       this.state.boardSize
         ?
         <div className="screen">
-          <div className="moves">
+          <div className="moves animate__animated animate__slideInLeft">
             Moves:
             <ol>
               {moveElements}
             </ol>
           </div>
           <div className="board-parent">
-            <div className="game-board">
+            <div className="game-board animate__animated animate__zoomIn">
               <Board
                 squares={current.squares}
                 onClick={(i) => this.handleClick(i)}
@@ -129,7 +131,7 @@ class Game extends React.Component {
               />
             </div>
           </div>
-          <div className="game-info">
+          <div className={`game-info animate__animated ${winner ? "animate__tada" : "animate__slideInRight"}`}>
             {status}
             <div>
               <button onClick={() => { window.location.reload() }}>
@@ -139,14 +141,21 @@ class Game extends React.Component {
           </div>
         </div>
         :
-        <div className="screen select-screen">
-          <div className="size-select">
+        <div className="screen select-screen animate__animated animate__fadeIn">
+          <div className={`size-select ${this.state.selectorVisible ? "" : "animate__animated animate__fadeOutUp"}`}>
             <div>
               Select board size: {`${this.state.boardSizePre}x${this.state.boardSizePre}`}
             </div>
-            <input type="range" onInput={(c) => this.setState({ boardSizePre: c.target.value })} min="1" max="15" value={this.state.boardSizePre} />
+            <input type="range" onInput={(c) => {
+              this.setState({ boardSizePre: c.target.value });
+            }
+            } min="1" max="15" value={this.state.boardSizePre} />
             <div>
-              <button onClick={() => { this.setState({ boardSize: this.state.boardSizePre }) }}>
+              <button onClick={async () => {
+                this.setState({ selectorVisible: false });
+                await new Promise(resolve => setTimeout(resolve, 800));
+                this.setState({ boardSize: this.state.boardSizePre })
+              }}>
                 OK
               </button>
             </div>
@@ -172,8 +181,8 @@ function calculateWinner(squares, boardSize) {
   let winPossibilities = [];
   let current = [];
 
-  //! Rows
-  let k = 0;
+  //! Rows and columns
+  let k = 0, l = 0;
   for (let i = 0; i < boardSize; i++) {
     for (let j = 0; j < boardSize; j++) {
       current.push(j + k);
@@ -181,18 +190,27 @@ function calculateWinner(squares, boardSize) {
     k -= -(boardSize);
     winPossibilities.push([current]);
     current = [];
-  }
 
-  //! Columns
-  for (let i = 0; i < boardSize; i++) {
-    k = 0;
+    l = 0;
     for (let j = 0; j < boardSize; j++) {
-      current.push((i + k));
-      k -= -(boardSize);
+      current.push((i + l));
+      l -= -(boardSize);
     }
     winPossibilities.push([current]);
     current = [];
   }
+
+  current = [];
+  for (let i = 0; i < boardSize; i++) {
+    current.push((i * boardSize) - (-i));
+  }
+  winPossibilities.push([current]);
+
+  current = [];
+  for (let i = 0; i < boardSize; i++) {
+    current.push((i * boardSize) + (boardSize - 1 - i));
+  }
+  winPossibilities.push([current]);
 
   let won = null;
 
